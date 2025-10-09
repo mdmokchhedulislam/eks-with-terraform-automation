@@ -33,3 +33,12 @@ module "eks" {
   vpc_subnet_ids         = module.vpc.private_subnet_ids
   worker_node_subnet_ids = module.vpc.private_subnet_ids
 }
+
+module "addons" {
+  source = "./modules/eks-addons"
+  cluster_name = "project"
+  vpc_id = module.vpc.vpc_id
+  vpc_cni_version = "v1.20.2-eksbuild.1"
+  
+
+}
