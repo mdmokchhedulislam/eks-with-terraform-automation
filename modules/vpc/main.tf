@@ -5,7 +5,7 @@ provider "aws" {
 # ----------------------
 # VPC
 # ----------------------
-resource "aws_vpc" "this" {
+resource "aws_vpc" "eks_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -20,8 +20,8 @@ resource "aws_vpc" "this" {
 # ----------------------
 # Internet Gateway
 # ----------------------
-resource "aws_internet_gateway" "this" {
-  vpc_id = aws_vpc.this.id
+resource "aws_internet_gateway" "eks_gateway" {
+  vpc_id = aws_vpc.eks_vpc.id
 
   tags = {
     Name = "${var.project_name}-igw"
@@ -34,7 +34,7 @@ resource "aws_internet_gateway" "this" {
 resource "aws_subnet" "public" {
   for_each = var.public_subnets
 
-  vpc_id                  = aws_vpc.this.id
+  vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 8, index(keys(var.public_subnets), each.key))
   availability_zone       = each.value
   map_public_ip_on_launch = true
@@ -53,7 +53,7 @@ resource "aws_subnet" "public" {
 resource "aws_subnet" "private" {
   for_each = var.private_subnets
 
-  vpc_id            = aws_vpc.this.id
+  vpc_id            = aws_vpc.eks_vpc.id
   cidr_block        = cidrsubnet(var.vpc_cidr, 8, index(keys(var.private_subnets), each.key) + length(var.public_subnets))
   availability_zone = each.value
 
@@ -75,7 +75,7 @@ resource "aws_eip" "nat" {
   }
 }
 
-resource "aws_nat_gateway" "this" {
+resource "aws_nat_gateway" "eks_nat_gateway" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public["public_1"].id
 
@@ -83,18 +83,18 @@ resource "aws_nat_gateway" "this" {
     Name = "${var.project_name}-nat-gateway"
   }
 
-  depends_on = [aws_internet_gateway.this]
+  depends_on = [aws_internet_gateway.eks_gateway]
 }
 
 # ----------------------
 # Route Tables
 # ----------------------
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.eks_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.this.id
+    gateway_id = aws_internet_gateway.eks_gateway.id
   }
 
   tags = {
@@ -103,11 +103,11 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.eks_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.this.id
+    nat_gateway_id = aws_nat_gateway.eks_nat_gateway.id
   }
 
   tags = {
