@@ -1,0 +1,28 @@
+# Terraform state files
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+# Crash log files
+crash.log
+.terraform/
+
+
+# Exclude override files that are usually local config only
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration files
+.terraformrc
+terraform.rc
+
+# Terraform modules and plugins
+.terraform/
+
+# Sensitive variable files (if আপনি ভেরিয়েবল ফাইল এ sensitive data রাখেন)
+*.tfvars
+*.tfvars.json
+
+# Ignore any generated plan files
+*.tfplan
