@@ -20,19 +20,19 @@ type = string
 }
 
 
-# variable "kube_proxy_version" {
-# description = "kube-proxy Add-on version"
-# type = string
-# }
+variable "kube_proxy_version" {
+description = "kube-proxy Add-on version"
+type = string
+}
 
 
-# variable "coredns_version" {
-# description = "CoreDNS Add-on version"
-# type = string
-# }
+variable "coredns_version" {
+description = "CoreDNS Add-on version"
+type = string
+}
 
 
-# variable "ebs_csi_version" {
-# description = "EBS CSI Add-on version"
-# type = string
-# }
+variable "ebs_csi_version" {
+description = "EBS CSI Add-on version"
+type = string
+}
