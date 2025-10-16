@@ -141,6 +141,12 @@ resource "aws_eks_node_group" "worker_node_group" {
   node_role_arn   = aws_iam_role.worker_node_role.arn
   subnet_ids      = var.worker_node_subnet_ids
 
+  instance_types = ["m7i-flex.large"]  
+
+  remote_access {
+    ec2_ssh_key = "secondaccount"  
+  }
+
   scaling_config {
     desired_size = var.node_group_desired_size
     max_size     = var.node_group_max_size
